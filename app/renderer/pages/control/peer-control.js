@@ -17,6 +17,7 @@ const{ipcRenderer} = require('electron')
 
 // })
 
+// 创建连接
 const pc = new window.RTCPeerConnection({})
 
 // 创建消息通道
@@ -45,22 +46,22 @@ pc.onicecandidate = function (e) { //
     // }
 }
 
-ipcRenderer.on('candidate', (e, candidate) => {
-    addIceCandidate(candidate)
-})
+// ipcRenderer.on('candidate', (e, candidate) => {
+//     addIceCandidate(candidate)
+// })
 
-let candidates = [];
-async function addIceCandidate(candidate) {
-    if (candidate) {
-        candidates.push(candidate)
-    }
-    if (pc.remoteDescription && pc.remoteDescription.type) {
-        for (let i = 0; i < candidates.length; i++) {
-            await pc.addIceCandidate(new RTCIceCandidate(candidates[i]))
-        }
-        candidates = []
-    }
-}
+// let candidates = [];
+// async function addIceCandidate(candidate) {
+//     if (candidate) {
+//         candidates.push(candidate)
+//     }
+//     if (pc.remoteDescription && pc.remoteDescription.type) {
+//         for (let i = 0; i < candidates.length; i++) {
+//             await pc.addIceCandidate(new RTCIceCandidate(candidates[i]))
+//         }
+//         candidates = []
+//     }
+// }
 // window.addIceCandidate = addIceCandidate
 
 async function createOffer(){
@@ -78,13 +79,14 @@ createOffer().then((offer) => {
 })
 
 async function setRemote(answer) {
-    await pc.setRemoteDescription(answer)
+    let iceCandidate = new window.RTCIceCandidate(answer.sdp)
+    await pc.setRemoteDescription(answer).addIceCandidate(iceCandidate).then((e) => {
+        console.log('set Remote Description and iceCandidate success:', e)
+    })
 }
 
 ipcRenderer.on('answer', (e, answer) => {
     setRemote(answer)
-    let iceCandidate = new RTCIceCandidate(answer.sdp)
-    pc.addIceCandidate(iceCandidate)
     // ipcRenderer.send('forward', 'puppet-candidate', iceCandidate.toJSON())
 })
 
