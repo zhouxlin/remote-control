@@ -83,7 +83,7 @@ async function setRemote(answer) {
 
 ipcRenderer.on('answer', (e, answer) => {
     setRemote(answer)
-    let iceCandidate = new RTCIceCandidate(answer)
+    let iceCandidate = new RTCIceCandidate(answer.sdp)
     pc.addIceCandidate(iceCandidate)
     // ipcRenderer.send('forward', 'puppet-candidate', iceCandidate.toJSON())
 })
