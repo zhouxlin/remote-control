@@ -1,6 +1,5 @@
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({port: 8010})
-
 const code2ws = new Map()
 
 wss.on('connection', function connection(ws, request) {

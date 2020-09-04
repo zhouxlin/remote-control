@@ -51,6 +51,7 @@ pc.onicecandidate = function (e) {
 ipcRenderer.on('candidate', (e, candidate) => {
     addIceCandidate(candidate)
 })
+
 let candidates = [];
 async function addIceCandidate(candidate) {
     if (candidate) {
