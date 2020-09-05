@@ -21,7 +21,7 @@ function create() {
 
 // 主进程向渲染进程发内容
 function send(channel, ...args) {
-    win.webContents.send(channel, ...args) 
+    win.webContents.send(channel, ...args)
 }
 
 module.exports = {create, send}

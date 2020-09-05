@@ -1,11 +1,10 @@
 const {ipcMain, remote} = require('electron')
-const {send: sendMainWindow} = require('./window/main')
-const { create: createControlWindow, send: sendControlWindow} = require('./window/control')
+const {create, send: sendMainWindow} = require('./window/main')
+const {create: createControlWindow, send: sendControlWindow} = require('./window/control')
 const signal = require('./signal')
 
 module.exports = function () {
     ipcMain.handle('login', async () => {
-
         let {code} =  await signal.invoke('login', null, 'logined')
         console.log('code', code)
         return code
@@ -42,7 +41,7 @@ module.exports = function () {
 
     // 收到control证书，puppet响应
     signal.on('puppet-candidate', (data) => {
-        sendControlWindow('condidate', data)
+        sendControlWindow('candidate', data)
     })
 
     // 收到puppet证书，control响应

@@ -39,29 +39,33 @@ dc.onerror = (error) => {
 // onicecandidate iceEvent
 // addIceCandidate
 pc.onicecandidate = function (e) { //
-    console.log('control receive a candidate', JSON.stringify(e.candidate))
-    pc.addIceCandidate(e.candidate)
-    // if (e.candidate) {
-    //     ipcRenderer.send('forward', 'control-candidate', e.candidate.toJSON())
-    // }
+    console.log('candidate', JSON.stringify(e.candidate))
+    if (e.candidate) {
+        ipcRenderer.send('forward', 'control-candidate', e.candidate.toJSON())
+    }
+	// 告知其他人
 }
 
-// ipcRenderer.on('candidate', (e, candidate) => {
-//     addIceCandidate(candidate)
-// })
+// 需要发送candidate时触发，webRTC自动触发
+ipcRenderer.on('candidate', (e, candidate) => {
+    console.log('receive a candidate', candidate)
+    addIceCandidate(candidate)
+})
 
-// let candidates = [];
-// async function addIceCandidate(candidate) {
-//     if (candidate) {
-//         candidates.push(candidate)
-//     }
-//     if (pc.remoteDescription && pc.remoteDescription.type) {
-//         for (let i = 0; i < candidates.length; i++) {
-//             await pc.addIceCandidate(new RTCIceCandidate(candidates[i]))
-//         }
-//         candidates = []
-//     }
-// }
+let candidates = [];
+async function addIceCandidate(candidate) {
+    if (candidate) {
+        candidates.push(candidate)
+    }
+    if (pc.remoteDescription && pc.remoteDescription.type) {
+        for (let i = 0; i < candidates.length; i++) {
+            await pc.addIceCandidate(new RTCIceCandidate(candidates[i]))
+        }
+        candidates = []
+    } else {
+        console.log('peer connection remoteDescription is not set', pc.remoteDescription)
+    }
+}
 // window.addIceCandidate = addIceCandidate
 
 async function createOffer(){
@@ -70,7 +74,7 @@ async function createOffer(){
         offerToReceiveVideo: true
     })
     await pc.setLocalDescription(offer)
-    console.log('control create offer success：', JSON.stringify(offer))
+    console.log('control create offer success：', JSON.stringify(pc.localDescription))
     return pc.localDescription
 }
 
@@ -79,15 +83,12 @@ createOffer().then((offer) => {
 })
 
 async function setRemote(answer) {
-    let iceCandidate = new window.RTCIceCandidate(answer.sdp)
-    await pc.setRemoteDescription(answer).addIceCandidate(iceCandidate).then((e) => {
-        console.log('set Remote Description and iceCandidate success:', e)
-    })
+    await pc.setRemoteDescription(answer)
 }
 
 ipcRenderer.on('answer', (e, answer) => {
     setRemote(answer)
-    // ipcRenderer.send('forward', 'puppet-candidate', iceCandidate.toJSON())
+    console.log('set remote success(control)')
 })
 
 // window.setRemote = setRemote
@@ -100,4 +101,5 @@ pc.ontrack = function (e) {
         peer.emit('add-stream', inboundStream)
     }
 }
+
 module.exports = peer
