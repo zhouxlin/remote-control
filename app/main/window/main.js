@@ -23,5 +23,8 @@ function create() {
 function send(channel, ...args) {
     win.webContents.send(channel, ...args)
 }
+function show () {
+    win.show()
+}
 
-module.exports = {create, send}
+module.exports = {create, send, show}

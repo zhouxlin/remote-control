@@ -1,5 +1,5 @@
 {
-  "name": "electron-remote-monitor",
+  "name": "DeekLink",
   "version": "1.0.0",
   "description": "",
   "main": "app/main/index.js",
@@ -11,7 +11,7 @@
     "rebuild": "npm rebuild --runtime=electron --target=9.1.2 --disturl=https://atom.io/download/atom-shell --abi=72"
   },
   "keywords": [],
-  "author": "",
+  "author": "zhouxl",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^5.2.0",
